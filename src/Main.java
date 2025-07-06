@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Scanner;
 public class Main {
     private static final String url="jdbc:mysql://localhost:3306/mydb";
     private static final String username="root";
@@ -49,7 +50,7 @@ public class Main {
 
             /* PREPARED STATEMENT EXAMPLE */
 
-            String query = "INSERT INTO STUDENTS(NAME, AGE, MARKS) VALUES(?, ?, ?)";
+            /*String query = "INSERT INTO STUDENTS(NAME, AGE, MARKS) VALUES(?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, "Rahul");
             preparedStatement.setInt(2, 22);
@@ -59,7 +60,31 @@ public class Main {
                 System.out.println("Data inserted successfully using PreparedStatement.");
             } else {
                 System.out.println("Data insertion failed using PreparedStatement.");
+            }*/
+
+
+            /*BATCH PROCESSING EXAMPLE*/
+            while(true){
+                Scanner sc=new Scanner(System.in);
+                String name= sc.nextLine();
+                int age= sc.nextInt();
+                double marks= sc.nextDouble();
+                String query = String.format(("INSERT INTO STUDENTS(NAME, AGE, MARKS) VALUES('%s', %o, %f)"), name, age, marks);
+                statement.addBatch(query);
+                char choice = sc.next().charAt(0);
+                if(choice == 'n' || choice == 'N') {
+                    break;
+                }
             }
+            int resultSet[] = statement.executeBatch();
+            int successCount = 0;
+            for (int count : resultSet) {
+                if (count >= 0) {
+                    successCount++;
+                }
+            }
+            System.out.println(successCount + " records inserted successfully using batch processing.");
+
         }
         catch (SQLException e) {
             System.out.println("Connection failed. Please check your URL, username, and password.");
